@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">PicEditor</string>
+    <string name="search">SearchView\n</string>
+    <string name="name">Name</string>
+    <string name="photos">Photos</string>
+    <string name="restore">Restore</string>
+    <string name="delete_forever">Delete Forever</string>
+    <string name="add_image">Add Image</string>
+    <string name="rotate">Rotate</string>
+    <string name="crop">Crop</string>
+    <string name="filter">Filter</string>
+    <string name="adjust">Adjust</string>
+    <string name="play">Play</string>
+    <string name="trash">Trash</string>
+    <string name="lock">Lock</string>
+    <string name="hide">Hide</string>
+    <string name="info">Info</string>
+    <string name="enter_description">Enter description</string>
+    <string name="ng_b_nh_v_i_cloud">Đồng bộ ảnh với Cloud</string>
+    <string name="t_o_slideshow">Tạo Slideshow</string>
+    <string name="x_p_theo_t_n">Xếp theo tên</string>
+    <string name="x_p_theo_ng_y_ch_p">Xếp theo ngày chụp</string>
+    <string name="giao_di_n_t_i">Giao diện tối</string>
+    <string name="giao_di_n_s_ng">Giao diện sáng</string>
+    <string name="facebook">Facebook</string>
+    <string name="messenger">Messenger</string>
+    <string name="gmail">Gmail</string>
+    <string name="bluetooth">Bluetooth</string>
+    <string name="th_m_m_t">Thêm mô tả</string>
+    <string name="th_m_v_o_album">Thêm vào album</string>
+    <string name="n_nh_v_b_o_m_t">Ẩn ảnh và bảo mật</string>
+    <string name="t_l_m_m_n_h_nh_kh_a">Đặt làm màn hình khóa</string>
+    <string name="t_l_m_m_n_h_nh_ch_nh">Đặt làm màn hình chính</string>
+    <string name="chi_ti_t_nh">Chi tiết ảnh</string>
+    <string name="image">Image</string>
+    <string name="albums">Albums</string>
+</resources>

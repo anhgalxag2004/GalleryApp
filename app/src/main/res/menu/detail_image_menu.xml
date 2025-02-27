@@ -1,0 +1,20 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/add_description"
+        android:title="@string/th_m_m_t" />
+    <item
+        android:id="@+id/add_to_album"
+        android:title="@string/th_m_v_o_album" />
+    <item
+        android:id="@+id/secure_image"
+        android:title="@string/n_nh_v_b_o_m_t" />
+    <item
+        android:id="@+id/wallpaper"
+        android:title="@string/t_l_m_m_n_h_nh_kh_a" />
+    <item
+        android:id="@+id/main_screen"
+        android:title="@string/t_l_m_m_n_h_nh_ch_nh" />
+    <item
+        android:id="@+id/details"
+        android:title="@string/chi_ti_t_nh" />
+</menu>
