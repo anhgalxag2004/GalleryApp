@@ -1,138 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:padding="16dp">
 
-    <ImageView
-        android:id="@+id/app_icon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/baseline_photo_library_24" />
-
-    <TextView
-        android:id="@+id/textView"
+    <!-- Button to create a new album -->
+    <Button
+        android:id="@+id/btnNewAlbum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:fontFamily="@font/nunito_sans_extrabold"
-        android:text="Gal"
-        android:textColor="@color/blue"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/app_icon"
-        app:layout_constraintStart_toEndOf="@+id/app_icon"
-        app:layout_constraintTop_toTopOf="@+id/app_icon" />
+        android:text="New Album"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
 
-    <TextView
-        android:id="@+id/textView2"
+    <!-- Button to display all albums -->
+    <Button
+        android:id="@+id/btnAlbums"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1dp"
-        android:fontFamily="@font/nunito_sans_extrabold"
-        android:text="Lery"
-        android:textColor="@android:color/black"
-        android:textSize="20sp"
-        app:layout_constraintStart_toEndOf="@+id/textView"
-        app:layout_constraintTop_toTopOf="@+id/textView" />
+        android:text="Albums"
+        android:layout_below="@id/btnNewAlbum"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
 
-    <TextView
-        android:id="@+id/textView3"
+    <!-- Button to add an image to an album -->
+    <Button
+        android:id="@+id/btnAddImageToAlbum"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="76dp"
-        android:fontFamily="@font/nunito_sans_black"
-        android:text="@string/photos"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        app:layout_constraintStart_toStartOf="@+id/app_icon"
-        app:layout_constraintTop_toBottomOf="@+id/app_icon" />
+        android:text="Add Image to Album"
+        android:layout_below="@id/btnAlbums"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
 
-    <TextView
-        android:id="@+id/more_txt"
+    <!-- Button to display the AlbumImg table -->
+    <Button
+        android:id="@+id/btnDisplayAlbumImg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:fontFamily="@font/nunito_sans_black"
-        android:text="@string/albums"
-        android:textColor="@color/black"
-        android:textSize="24sp"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="@+id/textView3"
-        app:layout_constraintBottom_toBottomOf="@+id/textView3" />
+        android:text="Display AlbumImg"
+        android:layout_below="@id/btnAddImageToAlbum"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="1dp"
-        android:layout_height="20dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:background="@android:color/darker_gray"
-        app:layout_constraintStart_toEndOf="@+id/textView3"
-        app:layout_constraintTop_toTopOf="@+id/textView3"
-        app:layout_constraintBottom_toBottomOf="@+id/textView3" />
-
-    <TextView
-        android:id="@+id/gallery_total_images"
+    <!-- Button to add a folder to AutoScanFld -->
+    <Button
+        android:id="@+id/btnAddFolder"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:fontFamily="@font/nunito_sans_semibold"
-        android:text="Total items: 0"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView3"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/textView3" />
+        android:text="Add Folder to AutoScan"
+        android:layout_below="@id/btnDisplayAlbumImg"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="16dp" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/gallery_recycler"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
-
-    <ImageView
-        android:id="@+id/search"
-        android:layout_width="34dp"
-        android:layout_height="33dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="@+id/app_icon"
-        app:layout_constraintTop_toBottomOf="@+id/app_icon"
-        app:srcCompat="@drawable/ic_search" />
-
-    <ImageView
-        android:id="@+id/more"
-        android:layout_width="36dp"
-        android:layout_height="33dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintBottom_toBottomOf="@+id/search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/search"
-        app:layout_constraintVertical_bias="0.0"
-        app:srcCompat="@drawable/ic_more_vert" />
-
-    <EditText
-        android:id="@+id/search_text"
-        android:layout_width="212dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="60dp"
-        android:ems="10"
-        android:inputType="text"
-        android:hint="@string/name"
-        app:layout_constraintBottom_toBottomOf="@+id/search"
-        app:layout_constraintEnd_toStartOf="@+id/more"
-        app:layout_constraintTop_toTopOf="@+id/search"
-        app:layout_constraintVertical_bias="0.533" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "piceditor"
+rootProject.name = "Gallery4"
 include(":app")
  
