@@ -2,13 +2,17 @@ package com.example.piceditor;
 
 import static android.Manifest.permission.READ_MEDIA_IMAGES;
 import static android.os.Environment.MEDIA_MOUNTED;
+import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
@@ -17,6 +21,8 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -28,7 +34,7 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    static int PERMISSION_REQUEST_CODE = 100;
+    private static final int PERMISSION_REQUEST_CODE = 100;
     RecyclerView recycler;
     ArrayList<String> images;
     TextView allAlbumsTextView, allPhotosTextView;
@@ -39,6 +45,18 @@ public class MainActivity extends AppCompatActivity {
     TextView totalimages;
 
     EditText searchText;
+
+    // ActivityResultLauncher để yêu cầu từng quyền riêng biệt
+    private final ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    // Quyền đã được cấp, kiểm tra và yêu cầu quyền tiếp theo (nếu cần)
+                    checkPermissions();
+                } else {
+                    // Quyền bị từ chối, hiển thị thông báo
+                    Toast.makeText(this, "Permission denied. Some features may not work.", Toast.LENGTH_SHORT).show();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,88 +77,64 @@ public class MainActivity extends AppCompatActivity {
         allAlbumsTextView = findViewById(R.id.more_txt); // All Albums
         allAlbumsTextView.setAlpha(0.5f);
 
-
         changeToAlbums();
         setMoreButton();
         checkPermissions();
-
     }
 
-    private void changeToAlbums()
-    {
+    private void changeToAlbums() {
         allAlbumsTextView.setOnClickListener(v -> {
-            // Intent to navigate to AllAlbumsActivity
             Intent intent = new Intent(MainActivity.this, AllAlbumsActivity.class);
             startActivity(intent);
         });
     }
 
-    private void setMoreButton()
-    {
-        // Xử lý khi nhấn vào nút menu (More)
-        moreButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Tạo PopupMenu
-                PopupMenu popupMenu = new PopupMenu(MainActivity.this, v);
-                popupMenu.getMenuInflater().inflate(R.menu.more_menu, popupMenu.getMenu());
+    private void setMoreButton() {
+        moreButton.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(MainActivity.this, v);
+            popupMenu.getMenuInflater().inflate(R.menu.more_menu, popupMenu.getMenu());
 
-                // Xử lý sự kiện khi chọn một mục trong PopupMenu
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-                        int id = item.getItemId();
+            popupMenu.setOnMenuItemClickListener(item -> {
+                int id = item.getItemId();
 
-                        if (id == R.id.sync_cloud) {
-                            Toast.makeText(MainActivity.this, "Đồng bộ ảnh với Cloud", Toast.LENGTH_SHORT).show();
-                            return true;
-                        } else if (id == R.id.create_slideshow) {
-                            // Chuyển sang trang tạo Slideshow
-                            Intent intent = new Intent(MainActivity.this, CreateSlideShowActivity.class);
-                            startActivity(intent);
-                            return true;
-                        } else if (id == R.id.sort_by_name) {
-                            Toast.makeText(MainActivity.this, "Xếp theo tên", Toast.LENGTH_SHORT).show();
-                            return true;
-                        } else if (id == R.id.sort_by_date) {
-                            Toast.makeText(MainActivity.this, "Xếp theo ngày chụp", Toast.LENGTH_SHORT).show();
-                            return true;
-                        } else if (id == R.id.theme_dark) {
-                            Toast.makeText(MainActivity.this, "Tùy chỉnh giao diện tối", Toast.LENGTH_SHORT).show();
-                            return true;
-                        } else if (id == R.id.theme_light) {
-                            Toast.makeText(MainActivity.this, "Tùy chỉnh giao diện sáng", Toast.LENGTH_SHORT).show();
-                            return true;
-                        }
-                        return false;
-                    }
-                });
+                if (id == R.id.sync_cloud) {
+                    Toast.makeText(MainActivity.this, "Đồng bộ ảnh với Cloud", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (id == R.id.create_slideshow) {
+                    Intent intent = new Intent(MainActivity.this, CreateSlideShowActivity.class);
+                    startActivity(intent);
+                    return true;
+                } else if (id == R.id.sort_by_name) {
+                    Toast.makeText(MainActivity.this, "Xếp theo tên", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (id == R.id.sort_by_date) {
+                    Toast.makeText(MainActivity.this, "Xếp theo ngày chụp", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (id == R.id.theme_dark) {
+                    Toast.makeText(MainActivity.this, "Tùy chỉnh giao diện tối", Toast.LENGTH_SHORT).show();
+                    return true;
+                } else if (id == R.id.theme_light) {
+                    Toast.makeText(MainActivity.this, "Tùy chỉnh giao diện sáng", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                return false;
+            });
 
-                // Hiển thị PopupMenu
-                popupMenu.show();
-            }
+            popupMenu.show();
         });
     }
 
     private void checkPermissions() {
-        int result = ContextCompat.checkSelfPermission(getApplicationContext(), READ_MEDIA_IMAGES);
-        if (result == PackageManager.PERMISSION_GRANTED) {
-            loadImages();
+        // Kiểm tra từng quyền một
+        if (ContextCompat.checkSelfPermission(this, CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            // Yêu cầu quyền CAMERA
+            requestPermissionLauncher.launch(CAMERA);
+        } else if (ContextCompat.checkSelfPermission(this, READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            // Yêu cầu quyền READ_EXTERNAL_STORAGE
+            requestPermissionLauncher.launch(READ_EXTERNAL_STORAGE);
         } else {
-            ActivityCompat.requestPermissions(this, new String[]{READ_MEDIA_IMAGES}, PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults.length > 0) {
-            boolean accepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-            if (accepted) {
-                loadImages();
-            } else {
-                Toast.makeText(this, "You have denied the permissions..", Toast.LENGTH_SHORT).show();
-            }
+            // Tất cả quyền đã được cấp, tải ảnh
+            loadImages();
         }
     }
 
@@ -151,21 +145,19 @@ public class MainActivity extends AppCompatActivity {
             final String order = MediaStore.Images.Media.DATE_TAKEN + " DESC";
 
             Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null, null, order);
-            int count = cursor.getCount();
-            totalimages.setText("Total items: "+ count);
+            if (cursor != null) {
+                int count = cursor.getCount();
+                totalimages.setText("Total items: " + count);
 
-            for (int i=0; i<count; i++) {
-                cursor.moveToPosition(i);
-                int columnindex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-                images.add(cursor.getString(columnindex));
+                for (int i = 0; i < count; i++) {
+                    cursor.moveToPosition(i);
+                    int columnindex = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
+                    images.add(cursor.getString(columnindex));
+                }
+
+                recycler.getAdapter().notifyDataSetChanged();
+                cursor.close();
             }
-
-            recycler.getAdapter().notifyDataSetChanged();
-            cursor.close();
-
-
         }
     }
-
-
 }
