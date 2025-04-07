@@ -9,4 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#2196F3</color>
     <color name="gray_text">#616161</color>
+
+    <color name="text_primary">#FF000000</color> <!-- Màu đen cho light theme -->
+    <color name="text_secondary">#616161</color> <!-- Màu xám cho text phụ -->
 </resources>

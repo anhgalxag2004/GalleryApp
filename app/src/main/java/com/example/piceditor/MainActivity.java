@@ -24,7 +24,9 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -52,9 +54,6 @@ public class MainActivity extends AppCompatActivity {
                 if (isGranted) {
                     // Quyền đã được cấp, kiểm tra và yêu cầu quyền tiếp theo (nếu cần)
                     checkPermissions();
-                } else {
-                    // Quyền bị từ chối, hiển thị thông báo
-                    Toast.makeText(this, "Permission denied. Some features may not work.", Toast.LENGTH_SHORT).show();
                 }
             });
 
@@ -111,10 +110,10 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Xếp theo ngày chụp", Toast.LENGTH_SHORT).show();
                     return true;
                 } else if (id == R.id.theme_dark) {
-                    Toast.makeText(MainActivity.this, "Tùy chỉnh giao diện tối", Toast.LENGTH_SHORT).show();
+                    setAppTheme(AppCompatDelegate.MODE_NIGHT_YES);
                     return true;
                 } else if (id == R.id.theme_light) {
-                    Toast.makeText(MainActivity.this, "Tùy chỉnh giao diện sáng", Toast.LENGTH_SHORT).show();
+                    setAppTheme(AppCompatDelegate.MODE_NIGHT_NO);
                     return true;
                 }
                 return false;
@@ -158,6 +157,48 @@ public class MainActivity extends AppCompatActivity {
                 recycler.getAdapter().notifyDataSetChanged();
                 cursor.close();
             }
+        }
+    }
+
+    private void setAppTheme(int theme) {
+        AppCompatDelegate.setDefaultNightMode(theme);
+        // Recreate the activity to apply the theme
+        recreate();
+    }
+
+    private void showThemeSelectionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select Theme");
+
+        String[] themes = {"System Default", "Light Mode", "Dark Mode"};
+
+        builder.setSingleChoiceItems(themes, getCurrentThemePreference(), (dialog, which) -> {
+            switch (which) {
+                case 0:
+                    setAppTheme(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+                    break;
+                case 1:
+                    setAppTheme(AppCompatDelegate.MODE_NIGHT_NO);
+                    break;
+                case 2:
+                    setAppTheme(AppCompatDelegate.MODE_NIGHT_YES);
+                    break;
+            }
+            dialog.dismiss();
+        });
+
+        builder.show();
+    }
+
+    private int getCurrentThemePreference() {
+        switch (AppCompatDelegate.getDefaultNightMode()) {
+            case AppCompatDelegate.MODE_NIGHT_NO:
+                return 1;
+            case AppCompatDelegate.MODE_NIGHT_YES:
+                return 2;
+            case AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM:
+            default:
+                return 0;
         }
     }
 }
