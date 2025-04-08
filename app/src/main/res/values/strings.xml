@@ -18,8 +18,10 @@
     <string name="enter_description">Enter description</string>
     <string name="ng_b_nh_v_i_cloud">Đồng bộ ảnh với Cloud</string>
     <string name="t_o_slideshow">Tạo Slideshow</string>
-    <string name="x_p_theo_t_n">Xếp theo tên</string>
-    <string name="x_p_theo_ng_y_ch_p">Xếp theo ngày chụp</string>
+    <string name="sorted_by_name">Đang xếp theo tên ✓</string>
+    <string name="sorted_by_date">Đang xếp theo ngày ✓</string>
+    <string name="sort_by_name">Xếp theo tên</string>
+    <string name="sort_by_date">Xếp theo ngày chụp</string>
     <string name="giao_di_n_t_i">Giao diện tối</string>
     <string name="giao_di_n_s_ng">Giao diện sáng</string>
     <string name="facebook">Facebook</string>

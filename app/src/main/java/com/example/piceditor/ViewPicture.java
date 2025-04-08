@@ -1,8 +1,10 @@
 package com.example.piceditor;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,7 +21,7 @@ public class ViewPicture extends AppCompatActivity {
 
     ZoomageView image;
     String image_file;
-    private ImageView moreButton, backButton;
+    private ImageView moreButton, backButton, shareIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,7 @@ public class ViewPicture extends AppCompatActivity {
         image = findViewById(R.id.image);
         moreButton = findViewById(R.id.more_icon);
         backButton = findViewById(R.id.back_icon);
+        shareIcon = findViewById(R.id.share_icon);
 
         if (file.exists()) {
             Glide.with(this).load(image_file).into(image);
@@ -38,6 +41,7 @@ public class ViewPicture extends AppCompatActivity {
 
         goBack();
         setMoreButton();
+        setupShareButton();
     }
 
     private void setMoreButton()
@@ -91,6 +95,40 @@ public class ViewPicture extends AppCompatActivity {
             // Intent to navigate to AllAlbumsActivity
             Intent intent = new Intent(ViewPicture.this, MainActivity.class);
             startActivity(intent);
+        });
+    }
+
+    private void setupShareButton() {
+        shareIcon.setOnClickListener(v -> {
+            // Get the image file
+            File imageFile = new File(image_file);
+
+            // Check if file exists
+            if (!imageFile.exists()) {
+                Toast.makeText(this, "Image not found", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Create share intent
+            Intent shareIntent = new Intent(Intent.ACTION_SEND);
+            shareIntent.setType("image/*");
+
+            // For Android 7.0 and above, we need to use FileProvider
+            Uri imageUri = FileProvider.getUriForFile(
+                    this,
+                    getPackageName() + ".provider", // Make sure this matches your provider authority
+                    imageFile
+            );
+
+            // Grant temporary read permission to the content URI
+            shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            shareIntent.putExtra(Intent.EXTRA_STREAM, imageUri);
+
+            // Add optional text
+            shareIntent.putExtra(Intent.EXTRA_TEXT, "Check out this image!");
+
+            // Start the share activity
+            startActivity(Intent.createChooser(shareIntent, "Share image via"));
         });
     }
 }

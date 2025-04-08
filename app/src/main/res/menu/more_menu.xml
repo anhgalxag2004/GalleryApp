@@ -7,10 +7,10 @@
         android:title="@string/t_o_slideshow" />
     <item
         android:id="@+id/sort_by_name"
-        android:title="@string/x_p_theo_t_n" />
+        android:title="Xếp theo tên" />
     <item
         android:id="@+id/sort_by_date"
-        android:title="@string/x_p_theo_ng_y_ch_p" />
+        android:title="Xếp theo ngày chụp" />
     <item
         android:id="@+id/theme_dark"
         android:title="@string/giao_di_n_t_i" />

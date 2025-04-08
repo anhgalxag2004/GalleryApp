@@ -37,6 +37,9 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CODE = 100;
+    private static final int SORT_BY_DATE = 0;
+    private static final int SORT_BY_NAME = 1;
+    private int currentSortMode = SORT_BY_DATE;
     RecyclerView recycler;
     ArrayList<String> images;
     TextView allAlbumsTextView, allPhotosTextView;
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
     TextView totalimages;
 
     EditText searchText;
+
+    private boolean isSortedByName = false;
 
     // ActivityResultLauncher để yêu cầu từng quyền riêng biệt
     private final ActivityResultLauncher<String> requestPermissionLauncher =
@@ -79,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         changeToAlbums();
         setMoreButton();
         checkPermissions();
+        loadImages();
     }
 
     private void changeToAlbums() {
@@ -92,6 +98,15 @@ public class MainActivity extends AppCompatActivity {
         moreButton.setOnClickListener(v -> {
             PopupMenu popupMenu = new PopupMenu(MainActivity.this, v);
             popupMenu.getMenuInflater().inflate(R.menu.more_menu, popupMenu.getMenu());
+            MenuItem sortByNameItem = popupMenu.getMenu().findItem(R.id.sort_by_name);
+            MenuItem sortByDateItem = popupMenu.getMenu().findItem(R.id.sort_by_date);
+            if (currentSortMode == SORT_BY_NAME) {
+                sortByNameItem.setTitle("Đang xếp theo tên ✓");
+                sortByDateItem.setTitle("Xếp theo ngày chụp");
+            } else {
+                sortByNameItem.setTitle("Xếp theo tên");
+                sortByDateItem.setTitle("Đang xếp theo ngày ✓");
+            }
 
             popupMenu.setOnMenuItemClickListener(item -> {
                 int id = item.getItemId();
@@ -104,10 +119,14 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 } else if (id == R.id.sort_by_name) {
-                    Toast.makeText(MainActivity.this, "Xếp theo tên", Toast.LENGTH_SHORT).show();
+                    currentSortMode = SORT_BY_NAME;
+                    loadImages();
+                    Toast.makeText(MainActivity.this, "Đã xếp theo tên", Toast.LENGTH_SHORT).show();
                     return true;
                 } else if (id == R.id.sort_by_date) {
-                    Toast.makeText(MainActivity.this, "Xếp theo ngày chụp", Toast.LENGTH_SHORT).show();
+                    currentSortMode = SORT_BY_DATE;
+                    loadImages();
+                    Toast.makeText(MainActivity.this, "Đã xếp theo ngày chụp", Toast.LENGTH_SHORT).show();
                     return true;
                 } else if (id == R.id.theme_dark) {
                     setAppTheme(AppCompatDelegate.MODE_NIGHT_YES);
@@ -140,10 +159,22 @@ public class MainActivity extends AppCompatActivity {
     private void loadImages() {
         boolean SDCard = Environment.getExternalStorageState().equals(MEDIA_MOUNTED);
         if (SDCard) {
-            final String[] columns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID};
-            final String order = MediaStore.Images.Media.DATE_TAKEN + " DESC";
+            final String[] columns = {MediaStore.Images.Media.DATA, MediaStore.Images.Media._ID,
+                    MediaStore.Images.Media.DISPLAY_NAME,
+                    MediaStore.Images.Media.DATE_TAKEN};
+            String order;
+            switch (currentSortMode) {
+                case SORT_BY_NAME:
+                    order = MediaStore.Images.Media.DISPLAY_NAME + " ASC";
+                    break;
+                case SORT_BY_DATE:
+                default:
+                    order = MediaStore.Images.Media.DATE_TAKEN + " DESC";
+                    break;
+            }
 
             Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null, null, order);
+            images.clear();
             if (cursor != null) {
                 int count = cursor.getCount();
                 totalimages.setText("Total items: " + count);
