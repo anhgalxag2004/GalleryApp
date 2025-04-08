@@ -2,7 +2,10 @@ package com.example.piceditor;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AlertDialog;
 
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.app.WallpaperManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,6 +24,9 @@ import com.jsibbold.zoomage.ZoomageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class ViewPicture extends AppCompatActivity {
 
@@ -29,6 +35,9 @@ public class ViewPicture extends AppCompatActivity {
     private ImageView moreButton, backButton, shareIcon;
     private static final int REQUEST_SET_WALLPAPER = 100;
     private static final int REQUEST_SET_LOCKSCREEN = 101;
+    private static final String PREFS_NAME = "ImageDescriptions";
+    private static final String DESCRIPTION_PREFIX = "desc_";
+    private String imageDescription = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +51,9 @@ public class ViewPicture extends AppCompatActivity {
         backButton = findViewById(R.id.back_icon);
         shareIcon = findViewById(R.id.share_icon);
 
+        // Load saved description
+        loadDescription();
+
         if (file.exists()) {
             Glide.with(this).load(image_file).into(image);
         }
@@ -49,6 +61,21 @@ public class ViewPicture extends AppCompatActivity {
         goBack();
         setMoreButton();
         setupShareButton();
+    }
+
+    private void loadDescription() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        // Use file path as key to ensure uniqueness
+        String key = DESCRIPTION_PREFIX + image_file.hashCode();
+        imageDescription = prefs.getString(key, "");
+    }
+
+    private void saveDescription() {
+        SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        String key = DESCRIPTION_PREFIX + image_file.hashCode();
+        editor.putString(key, imageDescription);
+        editor.apply();
     }
 
     private void setMoreButton()
@@ -68,7 +95,7 @@ public class ViewPicture extends AppCompatActivity {
                         int id = item.getItemId();
 
                         if (id == R.id.add_description) {
-                            Toast.makeText(ViewPicture.this, "Thêm mô tả", Toast.LENGTH_SHORT).show();
+                            showAddDescriptionDialog();
                             return true;
                         } else if (id == R.id.add_to_album) {
                             Toast.makeText(ViewPicture.this, "Thêm vào album", Toast.LENGTH_SHORT).show();
@@ -83,7 +110,7 @@ public class ViewPicture extends AppCompatActivity {
                             setAsWallpaper(WallpaperManager.FLAG_LOCK);
                             return true;
                         } else if (id == R.id.details) {
-                            Toast.makeText(ViewPicture.this, "Chi tiết ảnh", Toast.LENGTH_SHORT).show();
+                            showImageDetails();
                             return true;
                         }
                         return false;
@@ -94,6 +121,77 @@ public class ViewPicture extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+    }
+
+    private void showImageDetails() {
+        File file = new File(image_file);
+        if (!file.exists()) {
+            Toast.makeText(this, "Image file not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Image Details");
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_image_details, null);
+        builder.setView(view);
+
+        TextView tvFileName = view.findViewById(R.id.tvFileName);
+        TextView tvFilePath = view.findViewById(R.id.tvFilePath);
+        TextView tvFileSize = view.findViewById(R.id.tvFileSize);
+        TextView tvDateTaken = view.findViewById(R.id.tvDateTaken);
+        TextView tvDescription = view.findViewById(R.id.tvDescription);
+
+        // Set file name
+        tvFileName.setText("Name: " + file.getName());
+
+        // Set file path
+        tvFilePath.setText("Path: " + file.getAbsolutePath());
+
+        // Set file size
+        long fileSize = file.length();
+        String sizeString;
+        if (fileSize < 1024) {
+            sizeString = fileSize + " B";
+        } else if (fileSize < 1024 * 1024) {
+            sizeString = String.format(Locale.getDefault(), "%.1f KB", fileSize / 1024.0);
+        } else {
+            sizeString = String.format(Locale.getDefault(), "%.1f MB", fileSize / (1024.0 * 1024.0));
+        }
+        tvFileSize.setText("Size: " + sizeString);
+
+        // Set last modified date
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        tvDateTaken.setText("Date Taken: " + sdf.format(new Date(file.lastModified())));
+
+        // Set description
+        tvDescription.setText("Description: " + (imageDescription.isEmpty() ? "No description" : imageDescription));
+
+        builder.setPositiveButton("OK", null);
+        builder.show();
+    }
+
+    private void showAddDescriptionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Description");
+
+        View view = getLayoutInflater().inflate(R.layout.dialog_add_description, null);
+        builder.setView(view);
+
+        EditText etDescription = view.findViewById(R.id.etDescription);
+        etDescription.setText(imageDescription);
+
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                imageDescription = etDescription.getText().toString();
+                saveDescription(); // Lưu mô tả vào SharedPreferences
+                Toast.makeText(ViewPicture.this, "Description saved", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 
     private void setAsWallpaper(int which) {
