@@ -3,8 +3,12 @@ package com.example.piceditor;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.app.WallpaperManager;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,12 +20,15 @@ import com.bumptech.glide.Glide;
 import com.jsibbold.zoomage.ZoomageView;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ViewPicture extends AppCompatActivity {
 
     ZoomageView image;
     String image_file;
     private ImageView moreButton, backButton, shareIcon;
+    private static final int REQUEST_SET_WALLPAPER = 100;
+    private static final int REQUEST_SET_LOCKSCREEN = 101;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,11 +76,11 @@ public class ViewPicture extends AppCompatActivity {
                         } else if (id == R.id.secure_image) {
                             Toast.makeText(ViewPicture.this, "Ẩn và bảo mật ảnh", Toast.LENGTH_SHORT).show();
                             return true;
-                        } else if (id == R.id.wallpaper) {
-                            Toast.makeText(ViewPicture.this, "Đặt làm hình nền", Toast.LENGTH_SHORT).show();
-                            return true;
                         } else if (id == R.id.main_screen) {
-                            Toast.makeText(ViewPicture.this, "Đặt làm màn hình chính", Toast.LENGTH_SHORT).show();
+                            setAsWallpaper(WallpaperManager.FLAG_SYSTEM);
+                            return true;
+                        } else if (id == R.id.lock_screen) {
+                            setAsWallpaper(WallpaperManager.FLAG_LOCK);
                             return true;
                         } else if (id == R.id.details) {
                             Toast.makeText(ViewPicture.this, "Chi tiết ảnh", Toast.LENGTH_SHORT).show();
@@ -87,6 +94,28 @@ public class ViewPicture extends AppCompatActivity {
                 popupMenu.show();
             }
         });
+    }
+
+    private void setAsWallpaper(int which) {
+        try {
+            WallpaperManager wallpaperManager = WallpaperManager.getInstance(this);
+            Bitmap bitmap = BitmapFactory.decodeFile(image_file);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                // For Android 7.0+ (API 24+) which supports separate lockscreen wallpapers
+                wallpaperManager.setBitmap(bitmap, null, true, which);
+                String message = (which == WallpaperManager.FLAG_SYSTEM) ?
+                        "Đã đặt làm màn hình chính" : "Đã đặt làm màn hình khóa";
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+            } else {
+                // For older versions, can only set main wallpaper
+                wallpaperManager.setBitmap(bitmap);
+                Toast.makeText(this, "Đã đặt làm hình nền", Toast.LENGTH_SHORT).show();
+            }
+        } catch (IOException e) {
+            Toast.makeText(this, "Lỗi khi đặt hình nền: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 
     private void goBack()

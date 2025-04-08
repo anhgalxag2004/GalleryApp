@@ -9,11 +9,11 @@
         android:id="@+id/secure_image"
         android:title="@string/n_nh_v_b_o_m_t" />
     <item
-        android:id="@+id/wallpaper"
-        android:title="@string/t_l_m_m_n_h_nh_kh_a" />
-    <item
         android:id="@+id/main_screen"
-        android:title="@string/t_l_m_m_n_h_nh_ch_nh" />
+        android:title="Đặt làm màn hình chính" />
+    <item
+        android:id="@+id/lock_screen"
+        android:title="Đặt làm màn hình khóa" />
     <item
         android:id="@+id/details"
         android:title="@string/chi_ti_t_nh" />
