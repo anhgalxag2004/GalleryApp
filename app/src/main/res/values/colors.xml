@@ -9,7 +9,9 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#2196F3</color>
     <color name="gray_text">#616161</color>
-
+    <color name="favorite_red">#FFFF0000</color>
+    <color name="your_red_color">#FF0000</color> // Ví dụ màu đỏ
+    <color name="your_default_icon_color">#888888</color> // Ví dụ màu xám
     <color name="text_primary">#FF000000</color> <!-- Màu đen cho light theme -->
     <color name="text_secondary">#616161</color> <!-- Màu xám cho text phụ -->
 </resources>
